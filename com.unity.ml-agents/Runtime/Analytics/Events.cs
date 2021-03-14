@@ -1,4 +1,4 @@
-#if MLA_UNITY_ANALYTICS
+#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
@@ -189,4 +189,4 @@ namespace Unity.MLAgents.Analytics
         public int NumNetworkHiddenUnits;
     }
 }
-#endif // MLA_UNITY_ANALYTICS
+#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
