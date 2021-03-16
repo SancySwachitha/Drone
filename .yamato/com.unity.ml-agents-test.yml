@@ -84,7 +84,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
                 - "upm-ci~/test-results/**/*"
     dependencies:
         - .yamato/com.unity.ml-agents-pack.yml#pack
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ package.name }}_{{ platform.name }}_2019.4
     triggers:
         cancel_old_ci: true
       {% if platform.name == "linux" %}
