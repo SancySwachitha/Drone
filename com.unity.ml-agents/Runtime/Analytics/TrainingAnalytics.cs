@@ -68,22 +68,18 @@ namespace Unity.MLAgents.Analytics
 
         internal static bool EnableAnalytics()
         {
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
+#if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
             if (s_EventsRegistered)
             {
                 return true;
             }
             foreach (var eventName in s_EventNames)
             {
-#if UNITY_EDITOR
                 AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(eventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
                 if (result != AnalyticsResult.Ok)
                 {
                     return false;
                 }
-#else
-                return false;
-#endif // UNITY_EDITOR
             }
             s_EventsRegistered = true;
 
