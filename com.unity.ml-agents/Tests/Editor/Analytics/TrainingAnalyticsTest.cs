@@ -2,7 +2,6 @@
 #define MLA_UNITY_ANALYTICS_MODULE_ENABLED
 #endif
 
-#if MLA_UNITY_ANALYTICS_MODULE_ENABLED
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -10,6 +9,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.Policies;
+using UnityEditor;
 
 namespace Unity.MLAgents.Tests.Analytics
 {
@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Tests.Analytics
         public void TestEnableAnalytics()
         {
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE_ENABLED
-            Assert.IsTrue(TrainingAnalytics.EnableAnalytics());
+            Assert.IsTrue(EditorAnalytics.enabled == TrainingAnalytics.EnableAnalytics());
 #else
             Assert.IsFalse(TrainingAnalytics.EnableAnalytics());
 #endif
@@ -85,4 +85,3 @@ namespace Unity.MLAgents.Tests.Analytics
         }
     }
 }
-#endif // MLA_UNITY_ANALYTICS_MODULE_ENABLED
