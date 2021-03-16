@@ -31,7 +31,7 @@ packages:
   {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
 
 test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
-    name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
+    name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }}
     agent:
         type: {{ platform.type }}
         image: {{ platform.image }}
