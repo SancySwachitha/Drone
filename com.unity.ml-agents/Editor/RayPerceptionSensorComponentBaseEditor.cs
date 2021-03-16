@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Editor
             if (is3d)
             {
                 EditorGUILayout.HelpBox("The Physics Module is not currently present.  "+
-                "Please add it to your project in order to view the inspector for the "+
+                "Please add it to your project in order to use the Ray Perception APIs in the "+
                 $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
             }
 #endif
@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Editor
             if (!is3d)
             {
                 EditorGUILayout.HelpBox("The Physics2D Module is not currently present.  "+
-                "Please add it to your project in order to view the inspector for the "+
+                "Please add it to your project in order to use the Ray Perception APIs in the "+
                 $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
             }
 #endif
