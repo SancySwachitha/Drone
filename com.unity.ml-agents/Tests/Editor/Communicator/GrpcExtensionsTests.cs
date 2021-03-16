@@ -1,4 +1,7 @@
 using System;
+using System.Text.RegularExpressions;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Demonstrations;
@@ -7,17 +10,32 @@ using Unity.MLAgents.Sensors;
 
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
+using UnityEditor.VersionControl;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class GrpcExtensionsTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities();
+        }
+
         [Test]
         public void TestDefaultBrainParametersToProto()
         {
             // Should be able to convert a default instance to proto.
             var brain = new BrainParameters();
+            brain.ToProto("foo", false);
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
             brain.ToProto("foo", false);
         }
 
@@ -27,14 +45,72 @@ namespace Unity.MLAgents.Tests
             // Should be able to convert a default instance to proto.
             var actionSpec = new ActionSpec();
             actionSpec.ToBrainParametersProto("foo", false);
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false);
 
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities();
             // Continuous
             actionSpec = ActionSpec.MakeContinuous(3);
             actionSpec.ToBrainParametersProto("foo", false);
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false);
+
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities();
 
             // Discrete
             actionSpec = ActionSpec.MakeDiscrete(1, 2, 3);
             actionSpec.ToBrainParametersProto("foo", false);
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false);
+        }
+
+        [Test]
+        public void ToBrainParameters()
+        {
+            // Should be able to convert a default instance to proto.
+            var actionSpec = new ActionSpec();
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
+
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities();
+            // Continuous
+            actionSpec = ActionSpec.MakeContinuous(3);
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
+
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities();
+
+            // Discrete
+            actionSpec = ActionSpec.MakeDiscrete(1, 2, 3);
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                HybridActions = false
+            };
+            actionSpec.ToBrainParametersProto("foo", false).ToBrainParameters();
         }
 
         [Test]
@@ -42,7 +118,31 @@ namespace Unity.MLAgents.Tests
         {
             // Should be able to convert a default instance to proto.
             var agentInfo = new AgentInfo();
-            agentInfo.ToInfoActionPairProto();
+            var pairProto = agentInfo.ToInfoActionPairProto();
+            pairProto.AgentInfo.Observations.Add(new ObservationProto
+            {
+                CompressedData = ByteString.Empty,
+                CompressionType = CompressionTypeProto.None,
+                FloatData = new ObservationProto.Types.FloatData(),
+                ObservationType = ObservationTypeProto.Default,
+                Name = "Sensor"
+            });
+            pairProto.AgentInfo.Observations[0].Shape.Add(0);
+            pairProto.GetObservationSummaries();
+            agentInfo.ToAgentInfoProto();
+            agentInfo.groupId = 1;
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                MultiAgentGroups = false
+            };
+            agentInfo.ToAgentInfoProto();
+            LogAssert.Expect(LogType.Warning, new Regex(".+"));
+            Academy.Instance.TrainerCapabilities = new UnityRLCapabilities
+            {
+                BaseRLCapabilities = true,
+                MultiAgentGroups = true
+            };
             agentInfo.ToAgentInfoProto();
         }
 
@@ -78,9 +178,9 @@ namespace Unity.MLAgents.Tests
                 return new byte[] { 13, 37 };
             }
 
-            public void Update() { }
+            public void Update() {}
 
-            public void Reset() { }
+            public void Reset() {}
 
             public SensorCompressionType GetCompressionType()
             {
@@ -124,7 +224,7 @@ namespace Unity.MLAgents.Tests
                 (new[] {4, 4, 4}, SensorCompressionType.PNG, true, true), // Supported compressed
             };
 
-            foreach (var (shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
+            foreach (var(shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
             {
                 var inplaceShape = InplaceArray<int>.FromList(shape);
                 var dummySensor = new DummySensor();
@@ -164,8 +264,6 @@ namespace Unity.MLAgents.Tests
                     Assert.AreEqual(obsProto.CompressedData.Length, 0);
                 }
             }
-
-
         }
 
         [Test]
@@ -185,6 +283,7 @@ namespace Unity.MLAgents.Tests
             sparseChannelSensor.Mapping = new[] { 0, 0, 0, 1, 1, 1 };
             Assert.AreEqual(GrpcExtensions.IsTrivialMapping(sparseChannelSensor), false);
         }
+
         [Test]
         public void TestDefaultTrainingEvents()
         {
