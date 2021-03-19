@@ -32,6 +32,17 @@ namespace Unity.MLAgents.Tests
 
     public class RayPerception3DTests
     {
+        [Test]
+        public void TestDefaultLayersAreNegativeFive()
+        {
+#if MLA_UNITY_PHYSICS_MODULE_ENABLED
+            Assert.IsTrue(Physics.DefaultRaycastLayers == -5);
+#endif
+#if MLA_UNITY_PHYSICS2D_MODULE_ENABLED
+            Assert.IsTrue(Physics2D.DefaultRaycastLayers == -5);
+#endif
+        }
+
 #if MLA_UNITY_PHYSICS_MODULE_ENABLED
         // Use built-in tags
         const string k_CubeTag = "Player";

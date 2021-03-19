@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -128,6 +129,11 @@ namespace Unity.MLAgents.Tests
         public int[] GetObservationShape()
         {
             return new[] { 0 };
+        }
+
+        public ObservationSpec GetObservationSpec()
+        {
+            return ObservationSpec.Vector(0);
         }
 
         public int Write(ObservationWriter writer)

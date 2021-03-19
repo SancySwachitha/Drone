@@ -1,16 +1,8 @@
 test_editors:
-    - version: 2019.4
+    - version: 2020.2
       testProject: DevProject
 
 test_platforms:
-    - name: win
-      type: Unity::VM
-      image: package-ci/win10:stable
-      flavor: b1.large
-    - name: mac
-      type: Unity::VM::osx
-      image: package-ci/mac:stable
-      flavor: b1.small
     - name: linux
       type: Unity::VM
       image: package-ci/ubuntu:stable
